@@ -8,6 +8,7 @@ intents = discord.Intents.all()
 intents.members = True
 intents.typing = True
 intents.presences = True
+
 with open('login.json') as jsonfile:
     login = json.load(jsonfile)
 
