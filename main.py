@@ -36,7 +36,7 @@ async def on_ready():
 @tree.command(name="add_zeus", description="Добавить зевса в миссию")
 async def add_zeus(interaction,
                    steamid64: int = app_commands.Param(description="SteamID64 человека которого нужно добавить"),
-                   user: str = app_commands.Param(description="Упомяните человека либо вставть его ID")):
+                   user: discord.Member = app_commands.Param(description="Упомяните человека либо вставть его ID")):
     if can_use_command(interaction) == 1 and not db.check_if_exists_zeus(steamid64):
         if await db.add_zeus(steamid64, user):
             print("Добавил зевса в базу данных")
