@@ -18,7 +18,7 @@ class Guild(commands.Cog):
 
 
 class Zeuses(commands.Cog):
-    @commands.tree.command(name="add_zeus", description="Add zeus to list", guild=discord.Object(id=645653725213622272))
+    @commands.tree.command(name="add_zeus", description="Add zeus to list")
     async def add_zeus(self,interaction):
         await interaction.response.send_message("Hello!")
 

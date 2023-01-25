@@ -10,138 +10,139 @@ host = "localhost"
 port = "5432"
 
 
-class PostgresConnection:
-    """Describe connections to postgres"""
-    connect = psycopg2.connect(database=database_name, user=user, password=passw, host=host,
-                               port=port)
+async def create_conn():
+    conn = await asyncio.get_event_loop().run_in_executor(None, psycopg2.connect,database=database_name, user=user, password=passw, host=host,port=port)
     logging.info("connected to Postgres")
-    cur = connect.cursor(cursor_factory=psycopg2.extras.RealDictCursor)
+    cur = conn.cursor(cursor_factory=psycopg2.extras.RealDictCursor)
+    return conn, cur
 
 
 async def check_if_exists_zeus(steamid) -> bool:
+    conn, cur = await create_conn()
     try:
-        conn = PostgresConnection.connect
-        cur = PostgresConnection.cur
         query = "SELECT COUNT(1) FROM Zeuses WHERE steamid = %s"
         values = steamid
-        cur.execute(query, values)
-        conn.commit()
-        result = cur.fetchone()
+        await cur.execute(query, values)
+        await conn.commit()
+        result = await cur.fetchone()
         if result:
             return True
         return False
-    except psycopg2.InterfaceError:
-        logging.warning(psycopg2.InterfaceError)
-        check_if_exists_zeus(steamid)
+    except psycopg2.InterfaceError as e:
+        logging.warning(e)
     finally:
         if conn:
-            conn.close()
-            cur.close()
-        return False
+            await conn.close()
+            await cur.close()
 
 
 async def check_if_exists_infistar(steamid) -> bool:
+    conn, cur = await create_conn()
     try:
-        conn = PostgresConnection.connect
-        cur = PostgresConnection.cur
         query = "SELECT COUNT(1) FROM infistar WHERE steamid = %s"
         values = steamid
-        cur.execute(query, values)
-        conn.commit()
-        result = cur.fetchone()
+        await cur.execute(query, values)
+        await conn.commit()
+        result = await cur.fetchone()
         if result:
             return True
         return False
-    except psycopg2.InterfaceError:
-        logging.warning(psycopg2.InterfaceError)
-        check_if_exists_infistar(steamid)
+    except psycopg2.InterfaceError as e:
+        logging.warning()
     finally:
         if conn:
-            cur.close()
-            conn.close()
-        return False
+            await conn.close()
+            await cur.close()
 
 
 async def add_zeus(steamid, member) -> bool:
+    conn, cur = await create_conn()
     try:
-        if not check_if_exists_zeus(steamid):
-            conn = PostgresConnection.connect
-            cur = PostgresConnection.cur
+        if not await check_if_exists_zeus(steamid):
             query = "INSERT INTO Zeuses (steamid, member) VALUES (%s, %s)"
             values = (steamid, member)
-            cur.execute(query, values)
-            conn.commit()
+            await cur.execute(query, values)
+            await conn.commit()
+            return True
         else:
             return False
-    except psycopg2.InterfaceError:
-        logging.warning(psycopg2.InterfaceError)
-        add_zeus(steamid, member)
+    except psycopg2.InterfaceError as e:
+        logging.warning(e)
     finally:
         if conn:
-            conn.close()
-            cur.close()
-        return True
+            await conn.close()
+            await cur.close()
 
 
 async def delete_zeus(steamid) -> bool:
+    conn, cur = await create_conn()
     try:
-        if check_if_exists_zeus(steamid):
-            conn = PostgresConnection.connect
-            cur = PostgresConnection.cur
+        if await check_if_exists_zeus(steamid):
             query = "DELETE FROM zeuses WHERE steamid = %s"
             values = steamid
-            cur.execute(query,values)
-            conn.commit()
+            await cur.execute(query,values)
+            await conn.commit()
+            return True
         else:
             return False
-    except psycopg2.InterfaceError:
-        logging.warning(psycopg2.InterfaceError)
-        delete_zeus(steamid)
+    except psycopg2.InterfaceError as e:
+        logging.warning(e)
     finally:
         if conn:
-            conn.close()
-            cur.close()
-        return True
+            await conn.close()
+            await cur.close()
 
+async def get_zeuses():
+    conn, cur = await create_conn()
+    try:
+        query = "SELECT steamid, member FROM Zeuses"
+        await cur.execute(query)
+        result = await cur.fetchall()
+        formatted_result = ""
+        for row in result:
+            formatted_result += f"{row['steamid']} - <@!{row['member']}>\n"
+        return formatted_result
+    except psycopg2.InterfaceError as e:
+        logging.warning(e)
+    finally:
+        if conn:
+            await conn.close()
+            await cur.close()
 
 async def add_infistar(steamid, member, rank) -> bool:
+    conn, cur = await create_conn()
     try:
-        if not check_if_exists_infistar:
-            conn = PostgresConnection.connect
-            cur = PostgresConnection.cur
+        if not await check_if_exists_infistar(steamid):
             query = "INSERT INTO infistar (steamid, member, rank) VALUES (%s,%s,%s)"
             values= (steamid, member, rank)
-            cur.execute(query, values)
-            conn.commit()
+            await cur.execute(query, values)
+            await conn.commit()
+            return True
         else:
             return False
-    except psycopg2.InterfaceError:
-        logging.warning(psycopg2.InterfaceError)
-        add_infistar(steamid, member, rank)
+    except psycopg2.InterfaceError as e:
+        logging.warning()
     finally:
         if conn:
-            conn.close()
-            cur.close()
-        return True
+            await conn.close()
+            await cur.close()
 
 
 async def delete_infistar(steamid) -> bool:
+    conn, cur = await create_conn()
     try:
-        if check_if_exists_infistar:
-            conn = PostgresConnection.connect
-            cur = PostgresConnection.cur
+        if await check_if_exists_infistar(steamid):
             query = "DELETE FROM infistar steamid = %s"
             values = steamid
-            cur.execute(query, values)
-            conn.commit()
+            await cur.execute(query, values)
+            await conn.commit()
+            return True
         else:
             return False
-    except psycopg2.InterfaceError:
-        logging.warning(psycopg2.InterfaceError)
-        delete_zeus(steamid)
+    except psycopg2.InterfaceError as e:
+        logging.warning(e)
     finally:
         if conn:
-            conn.close()
-            cur.close()
-        return True
+            await conn.close()
+            await cur.close()
 

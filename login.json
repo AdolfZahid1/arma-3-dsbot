@@ -1,5 +1,13 @@
 {
   "login": "MTA1MzA2MjI0NjgzMTUwMTM1Mg.GRfCZW.eDXys8WxwAka4HsXtiIC-K5T3o6D2gpUuTJAqM",
   "prefix": "!",
-  "default-activity": "Nothing"
+  "default-activity": "Nothing",
+  "A3serverPath": "C:\\A3Master",
+  "A3ServerConfigName": "CONFIG_SL_server.cfg",
+  "DiscordServerId": "",
+  "DiscordManageRoleId": "812727498777165889",
+  "DiscordServerRestartRoleId": "823325036051300392",
+  "ServerAdress": "151.80.47.136",
+  "SteamAuthToken": "CBC8B22FA613659BA434CDB51B81E308",
+  "zeus_message": "0"
 }
