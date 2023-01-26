@@ -36,7 +36,7 @@ async def on_ready():
 @tree.command(name="add_zeus", description="Добавить зевса в миссию")
 async def add_zeus(interaction,
                    steamid64: int = app_commands.Param(description="SteamID64 человека которого нужно добавить"),
-                   user: discord.Member = app_commands.Param(description="Упомяните человека либо вставть его ID")):
+                   user: discord.Member = app_commands.Param(description="Упомяните человека")):
     if can_use_command(interaction) == 1 and not db.check_if_exists_zeus(steamid64):
         if await db.add_zeus(steamid64, user):
             print("Добавил зевса в базу данных")
@@ -55,6 +55,17 @@ async def del_zeus(interaction,
 @tree.command(name="zeus_list", description="Вывести список зевсов")
 async def del_zeus(interaction):
     await interaction.response.send_message(await db.get_zeuses())
+
+
+@tree.command(name="ban", description="Забанить игрока по стимайди")
+async def ban_user_by_id(interaction,
+                         steamid64: int = app_commands.Param(description="SteamID64 человека которого нужно забанить"),
+                         reason: str = app_commands.Param(description="Причина бана"),
+                         duration: int = app_commands.Param(description="Длительность, если навсегда - 0")
+                         ):
+    if login['BanRoleID'] in interaction.author.roles:
+        await db.ban_player(steamid64, reason, duration)
+
 
 
 async def main():

@@ -1,12 +1,19 @@
+import json
+
 import psycopg2.extras
 import re
 import logging
 import asyncio
+from datetime import datetime
+from dateutil.relativedelta import relativedelta
+from dateutil import parser
 
-passw = "#nUKb9aCc&9"
-database_name = "postgres"
-user = "postgres"
-host = "localhost"
+with open('login.json') as jsonfile:
+    login = json.load(jsonfile)
+passw = login['dbpassword']
+database_name = login['database_name']
+user = login['dbuser']
+host = login['dbhost']
 port = "5432"
 
 
@@ -173,8 +180,21 @@ async def ban_player(steamid, reason, time) -> bool:
     conn, cur = await create_conn()
     try:
         if not await check_if_exists_ban(steamid):
+            # Create a relativedelta object using the user input
+            if unit == 'd':
+                duration = relativedelta(days=value)
+            elif unit == 'm':
+                duration = relativedelta(months=value)
+            elif unit == 'y':
+                duration = relativedelta(years=value)
+            else:
+                print('Invalid unit')
+
+            # Add the duration to the current datetime
+            end_time = datetime.now() + time
+
             query = "INSERT INTO bans (steamid, reason, duration) VALUES (%s,%s,%s)"
-            values = (steamid, reason, time)
+            values = (steamid, reason, end_time)
             await cur.execute(query, values)
             await conn.commit()
             return True

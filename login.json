@@ -9,5 +9,11 @@
   "DiscordServerRestartRoleId": "823325036051300392",
   "ServerAdress": "151.80.47.136",
   "SteamAuthToken": "CBC8B22FA613659BA434CDB51B81E308",
-  "zeus_message": "0"
+  "zeus_message": "0",
+  "BanRoleID": "812727498777165889",
+  "path_to_bans": "C:\\A3Master\\profiles\\Users\\admin\\ban.txt",
+  "dbpassword": "#nUKb9aCc&9",
+  "dbhost": "localhost",
+  "dbuser": "postgres",
+  "database_name": "postgres"
 }

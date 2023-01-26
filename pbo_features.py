@@ -7,7 +7,7 @@ from a3lib import open_pbo, create_pbo
 
 A3serverPath = login['A3serverPath']
 A3ServerConfigName = login['A3ServerConfigName']
-
+path_to_bans = login['path_to_bans']
 
 async def add_zeus(steamid64, user):
     curator_list = list()
@@ -66,3 +66,33 @@ async def del_zeus(steamid64):
         for line in curator_list:
             file.write(line)
     return "Человек будет удалён после рестарта сервера."
+
+async def ban_user(steamid64):
+    # Открываем файл для чтения
+    with open(path_to_bans, 'r') as file:
+        # Читаем содержимое файла в список
+        lines = file.readlines()
+
+    # Добавляем новое значение в список
+    lines.append(str(steamid64) + '\n')
+
+    # Открываем файл для записи
+    with open(path_to_bans, 'w') as file:
+        # Записываем строки обратно в файл
+        for line in lines:
+            file.write(line)
+
+async def unban_user(steamid64):
+    # Открываем файл для чтения
+    with open(path_to_bans, 'r') as file:
+        # Читаем содержимое файла в список
+        lines = file.readlines()
+
+    # Удаляем строку с нужным значением
+    lines = [line for line in lines if line.strip() != str(steamid64) + '\n']
+
+    # Открываем файл для записи
+    with open(path_to_bans, 'w') as file:
+        # Записываем строки обратно в файл
+        for line in lines:
+            file.write(line)
