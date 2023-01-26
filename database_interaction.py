@@ -1,5 +1,4 @@
 import json
-
 import psycopg2.extras
 import re
 import logging
@@ -180,6 +179,7 @@ async def ban_player(steamid, reason, time) -> bool:
     conn, cur = await create_conn()
     try:
         if not await check_if_exists_ban(steamid):
+            value, unit = time.split()
             # Create a relativedelta object using the user input
             if unit == 'd':
                 duration = relativedelta(days=value)
@@ -191,12 +191,20 @@ async def ban_player(steamid, reason, time) -> bool:
                 print('Invalid unit')
 
             # Add the duration to the current datetime
-            end_time = datetime.now() + time
+            if value == 0:
+
+                end_time = 0
+            elif value < 0:
+                print("Длительность указана неверно")
+                return False
+            else:
+                end_time = datetime.now() + duration
 
             query = "INSERT INTO bans (steamid, reason, duration) VALUES (%s,%s,%s)"
             values = (steamid, reason, end_time)
             await cur.execute(query, values)
             await conn.commit()
+            print(f"Добавил {steamid} бан в базу данных")
             return True
         else:
             return False
@@ -211,14 +219,33 @@ async def ban_player(steamid, reason, time) -> bool:
 async def unban_player(steamid) -> bool:
     conn, cur = await create_conn()
     try:
-        if not await check_if_exists_ban(steamid):
+        if await check_if_exists_ban(steamid):
             query = "DELETE FROM bans WHERE steamid = %s"
             values = steamid
             await cur.execute(query, values)
             await conn.commit()
+            print(f"Удалил бан {steamid} из базы данных")
             return True
         else:
             return False
+    except psycopg2.InterfaceError as e:
+        logging.warning(e)
+    finally:
+        if conn:
+            await conn.close()
+            await cur.close()
+
+
+async def get_bans():
+    conn, cur = await create_conn()
+    try:
+        query = "SELECT steamid, reason, duration FROM bans"
+        await cur.execute(query)
+        result = await cur.fetchall()
+        formatted_result = ""
+        for row in result:
+            formatted_result += f"{row['steamid']} - <@!{row['reason']}> - duration:{row['duration']}\n"
+        return formatted_result
     except psycopg2.InterfaceError as e:
         logging.warning(e)
     finally:
