@@ -33,6 +33,8 @@ bot = commands.Bot(command_prefix=login["prefix"], intents=intents)
 @bot.event
 async def on_ready():
     await bot.tree.sync()
+    global SavedServerInfo
+    SavedServerInfo = await GetInfoServer()
     print("Ready!")
 
 
