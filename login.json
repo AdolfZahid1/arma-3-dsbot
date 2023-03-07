@@ -1,10 +1,10 @@
 {
-  "login": "MTA1MzA2MjI0NjgzMTUwMTM1Mg.GRfCZW.eDXys8WxwAka4HsXtiIC-K5T3o6D2gpUuTJAqM",
+  "login": "MTA2ODUyMDY2MTY2MTc5MDMwMA.G-I_Vo.aKdDOZVocI10qNjoIEoQC0OTO_4zDnc672JWMc",
   "prefix": "!",
   "default-activity": "Nothing",
   "A3serverPath": "C:\\A3Master",
   "A3ServerConfigName": "CONFIG_SL_server.cfg",
-  "DiscordServerId": "",
+  "DiscordServerId": "796479762331598869",
   "DiscordManageRoleId": "812727498777165889",
   "DiscordServerRestartRoleId": "823325036051300392",
   "ServerAdress": "151.80.47.136",
@@ -15,5 +15,7 @@
   "dbpassword": "#nUKb9aCc&9",
   "dbhost": "localhost",
   "dbuser": "postgres",
-  "database_name": "postgres"
+  "database_name": "starline",
+  "BotStatusGame": "  ",
+  "ManageServerID": "829152548438933514"
 }

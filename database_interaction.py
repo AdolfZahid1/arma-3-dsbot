@@ -126,7 +126,7 @@ async def get_zeuses():
         await cur.execute(query)
         result = await cur.fetchall()
         formatted_result = ""
-        for row in result:
+        async for row in result:
             formatted_result += f"{row['steamid']} - <@!{row['member']}>\n"
         return formatted_result
     except psycopg2.InterfaceError as e:
@@ -238,17 +238,26 @@ async def unban_player(steamid) -> bool:
 
 async def get_bans():
     conn, cur = await create_conn()
+    print("Вызвана функция списка бана")
     try:
         query = "SELECT steamid, reason, duration FROM bans"
+        print("Делаю запрос в бд")
         await cur.execute(query)
         result = await cur.fetchall()
+        if result:
+            print("Получил ответ")
+        tasks = []
         formatted_result = ""
         for row in result:
-            formatted_result += f"{row['steamid']} - <@!{row['reason']}> - duration:{row['duration']}\n"
-        return formatted_result
+            task = asyncio.create_task(format_ban_entry(row))
+            tasks.append(task)
+        formatted_result = await asyncio.gather(*tasks)
+        return "\n".join(formatted_result)
     except psycopg2.InterfaceError as e:
-        logging.warning(e)
+        print(e)
     finally:
         if conn:
             await conn.close()
             await cur.close()
+async def format_ban_entry(row):
+    return f"{row['steamid']} - <@!{row['reason']}> - duration:{row['duration']}"

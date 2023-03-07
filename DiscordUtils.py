@@ -1,4 +1,3 @@
-from Config import *
 import asyncio
 from discord.ext import commands
 from datetime import datetime, timedelta
@@ -25,6 +24,12 @@ tmp_time = ""
 name = ""
 times = ""
 
+with open('login.json') as jsonfile:
+    login = json.load(jsonfile)
+DiscordManageRoleId = login['DiscordManageRoleId']
+DiscordServerRestartRoleId = login['DiscordServerRestartRoleId']
+A3serverPath = login['A3serverPath']
+A3ServerConfigName = login['A3ServerConfigName']
 def GetCurrentTime():
     dt = datetime.utcnow()
     dt += timedelta(hours=3)
@@ -140,7 +145,7 @@ async def ServerRestart(updateMods = False,update_server = False):
             update_mods()
             await sleep(6)
         if update_server:
-            updaServer()
+            updateServer()
         process = subprocess.Popen([A3serverPath + '\\START_arma3server.bat'], creationflags=subprocess.CREATE_NEW_CONSOLE)
         await sleep(5)
         response = await GetInfoServer()
@@ -227,27 +232,6 @@ async def msselect():
                 break
     file = file.replace(" ","").replace("template","").replace("=","").replace(";\n","").replace('"',"").replace("\t","")
     return file
-def logo():
-    names = str("KENPATISERLERBAN"*200)
-    print(names[0:60])
-    print(names[0:14]+" "*30+names[0:16])
-    print(names[0:10]+" "*8+r"//"+f"{names[0:20]}"+r"\\"+" "*8+names[0:10])
-    print(names[0:10]+" "*7+r"//"+f"{names[0:22]}"+r"\\"+" "*7+names[0:10])
-    print(names[0:10]+" "*7+r"||"+f"{names[0:4]}"+r"//"+" "*16+"---"+" "*6+names[0:10])
-    print(names[0:10]+" "*7+r"||"+f"{names[0:4]}"+r"||"+" "*25+names[0:10])
-    print(names[0:10]+" "*7+r"||"+f"{names[0:4]}"+r"||"+" "*25+names[0:10])
-    print(names[0:10]+" "*7+r"\\"+f"{names[0:4]}"+r"\\"+" "*25+names[0:10])
-    print(names[0:10]+" "*8+r"\\"+f"{names[0:4]}"+r"\\"+" "*24+names[0:10])
-    print(names[0:10]+" "*9+r"\\"+f"{names[0:21]}"+r"\\"+" "*6+names[0:10])
-    print(names[0:10]+" "*10+r"\\"+f"{names[0:21]}"+r"\\"+" "*5+names[0:10])
-    print(names[0:10]+" "*27+r"\\"+f"{names[0:4]}"+r"||"+" "*5+names[0:10])
-    print(names[0:10]+" "*27+r"||"+f"{names[0:4]}"+r"||"+" "*5+names[0:10])
-    print(names[0:10]+" "*27+r"||"+f"{names[0:4]}"+r"||"+" "*5+names[0:10])
-    print(names[0:10]+" "*27+r"//"+f"{names[0:4]}"+r"//"+" "*5+names[0:10])
-    print(names[0:10]+" "*6+"---"+" "*17+r"//"+f"{names[0:4]}"+r"//"+" "*6+names[0:10])
-    print(names[0:10]+" "*7+r"\\"+f"{names[0:22]}"+r"//"+" "*7+names[0:10])
-    print(names[0:10]+" "*8+r"\\"+f"{names[0:20]}"+r"//"+" "*8+names[0:10])
-    print(names[0:14]+" "*30+names[0:16])
-    print(names[0:60]+"\n")
+
     
     
