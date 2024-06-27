@@ -24,65 +24,51 @@ async def create_conn():
     return conn, cur
 
 
+conn, cur = await create_conn()
 async def check_if_exists_zeus(steamid) -> bool:
-    conn, cur = await create_conn()
     try:
         query = "SELECT COUNT(1) FROM Zeuses WHERE steamid = %s"
         values = steamid
         await cur.execute(query, values)
         await conn.commit()
         result = await cur.fetchone()
-        if result:
-            return True
-        return False
     except psycopg2.InterfaceError as e:
         logging.warning(e)
     finally:
-        if conn:
-            await conn.close()
-            await cur.close()
+        if result:
+            return True
+        return False
 
 
 async def check_if_exists_ban(steamid) -> bool:
-    conn, cur = await create_conn()
     try:
         query = "SELECT COUNT(1) FROM bans WHERE steamid = %s"
         values = steamid
         await cur.execute(query, values)
         await conn.commit()
         result = await cur.fetchone()
-        if result:
-            return True
-        return False
     except psycopg2.InterfaceError as e:
         logging.warning(e)
     finally:
-        if conn:
-            await conn.close()
-            await cur.close()
-
+        if result:
+            return True
+        return False
 
 async def check_if_exists_infistar(steamid) -> bool:
-    conn, cur = await create_conn()
     try:
         query = "SELECT COUNT(1) FROM infistar WHERE steamid = %s"
         values = steamid
         await cur.execute(query, values)
         await conn.commit()
         result = await cur.fetchone()
-        if result:
-            return True
-        return False
     except psycopg2.InterfaceError as e:
         logging.warning()
     finally:
-        if conn:
-            await conn.close()
-            await cur.close()
-
+        if result:
+            return True
+        return False
 
 async def add_zeus(steamid, member) -> bool:
-    conn, cur = await create_conn()
     try:
         if not await check_if_exists_zeus(steamid):
             query = "INSERT INTO Zeuses (steamid, member) VALUES (%s, %s)"
@@ -94,14 +80,9 @@ async def add_zeus(steamid, member) -> bool:
             return False
     except psycopg2.InterfaceError as e:
         logging.warning(e)
-    finally:
-        if conn:
-            await conn.close()
-            await cur.close()
 
 
 async def delete_zeus(steamid) -> bool:
-    conn, cur = await create_conn()
     try:
         if await check_if_exists_zeus(steamid):
             query = "DELETE FROM zeuses WHERE steamid = %s"
@@ -113,14 +94,9 @@ async def delete_zeus(steamid) -> bool:
             return False
     except psycopg2.InterfaceError as e:
         logging.warning(e)
-    finally:
-        if conn:
-            await conn.close()
-            await cur.close()
 
 
 async def get_zeuses():
-    conn, cur = await create_conn()
     try:
         query = "SELECT steamid, member FROM Zeuses"
         await cur.execute(query)
@@ -131,14 +107,9 @@ async def get_zeuses():
         return formatted_result
     except psycopg2.InterfaceError as e:
         logging.warning(e)
-    finally:
-        if conn:
-            await conn.close()
-            await cur.close()
 
 
 async def add_infistar(steamid, member, rank) -> bool:
-    conn, cur = await create_conn()
     try:
         if not await check_if_exists_infistar(steamid):
             query = "INSERT INTO infistar (steamid, member, rank) VALUES (%s,%s,%s)"
@@ -150,14 +121,9 @@ async def add_infistar(steamid, member, rank) -> bool:
             return False
     except psycopg2.InterfaceError as e:
         logging.warning()
-    finally:
-        if conn:
-            await conn.close()
-            await cur.close()
 
 
 async def delete_infistar(steamid) -> bool:
-    conn, cur = await create_conn()
     try:
         if await check_if_exists_infistar(steamid):
             query = "DELETE FROM infistar WHERE steamid = %s"
@@ -169,18 +135,12 @@ async def delete_infistar(steamid) -> bool:
             return False
     except psycopg2.InterfaceError as e:
         logging.warning(e)
-    finally:
-        if conn:
-            await conn.close()
-            await cur.close()
 
 
 async def ban_player(steamid, reason, time) -> bool:
-    conn, cur = await create_conn()
     try:
         if not await check_if_exists_ban(steamid):
             value, unit = time.split()
-            # Create a relativedelta object using the user input
             if unit == 'd':
                 duration = relativedelta(days=value)
             elif unit == 'm':
@@ -190,7 +150,6 @@ async def ban_player(steamid, reason, time) -> bool:
             else:
                 print('Invalid unit')
 
-            # Add the duration to the current datetime
             if value == 0:
 
                 end_time = 0
@@ -210,14 +169,9 @@ async def ban_player(steamid, reason, time) -> bool:
             return False
     except psycopg2.InterfaceError as e:
         logging.warning(e)
-    finally:
-        if conn:
-            await conn.close()
-            await cur.close()
 
 
 async def unban_player(steamid) -> bool:
-    conn, cur = await create_conn()
     try:
         if await check_if_exists_ban(steamid):
             query = "DELETE FROM bans WHERE steamid = %s"
@@ -230,15 +184,9 @@ async def unban_player(steamid) -> bool:
             return False
     except psycopg2.InterfaceError as e:
         logging.warning(e)
-    finally:
-        if conn:
-            await conn.close()
-            await cur.close()
 
 
 async def get_bans():
-    conn, cur = await create_conn()
-    print("Вызвана функция списка бана")
     try:
         query = "SELECT steamid, reason, duration FROM bans"
         print("Делаю запрос в бд")
@@ -255,9 +203,5 @@ async def get_bans():
         return "\n".join(formatted_result)
     except psycopg2.InterfaceError as e:
         print(e)
-    finally:
-        if conn:
-            await conn.close()
-            await cur.close()
 async def format_ban_entry(row):
     return f"{row['steamid']} - <@!{row['reason']}> - duration:{row['duration']}"
