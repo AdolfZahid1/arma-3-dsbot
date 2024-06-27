@@ -11,7 +11,7 @@
   "zeus_message": "",
   "BanRoleID": "",
   "path_to_bans": "C:\\A3Master\\profiles\\Users\\admin\\ban.txt",
-  "dbpassword": "",
+  "dbpassword": "1234",
   "dbhost": "localhost",
   "dbport": "5432",
   "dbuser": "postgres",
